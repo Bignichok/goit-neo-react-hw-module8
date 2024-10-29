@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
 import ContactForm from '@/components/ContactForm';
 import SearchBox from '@/components/SearchBox';
@@ -28,11 +28,18 @@ const App = () => {
 		setSearchValue(e.target.value.trim().toLowerCase());
 	};
 
-	const filteredContacts = contacts.filter(contact =>
-		contact.name.toLowerCase().includes(searchValue)
-	);
+	const filteredContacts = useMemo(() => {
+		return contacts.filter(contact => contact.name.toLowerCase().includes(searchValue));
+	}, [contacts, searchValue]);
 
 	const addContact = contact => {
+		const duplicate = contacts.some(
+			existing => existing.name === contact.name || existing.number === contact.number
+		);
+		if (duplicate) {
+			alert('Contact with the same name or number already exists!');
+			return;
+		}
 		setContacts(prevContacts => [...prevContacts, contact]);
 	};
 
