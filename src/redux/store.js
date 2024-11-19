@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { combineReducers } from 'redux';
 import { persistReducer, FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import { persistStore } from 'redux-persist';
 
 import contactsReducer from './contactsSlice';
 import filtersReducer from './filtersSlice';
@@ -28,3 +29,5 @@ export const store = configureStore({
 			},
 		}),
 });
+
+export const persistor = persistStore(store);

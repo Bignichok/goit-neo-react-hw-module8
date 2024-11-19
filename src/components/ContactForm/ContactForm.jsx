@@ -2,6 +2,10 @@ import { useId } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { nanoid } from 'nanoid';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { selectContacts, addContact } from '@/redux/contactsSlice';
+
 import styles from './ContactForm.module.css';
 
 const FeedbackSchema = Yup.object().shape({
@@ -18,16 +22,27 @@ const initialValues = {
 	number: '',
 };
 
-const ContactForm = ({ addContact }) => {
+const ContactForm = () => {
 	const nameFieldId = useId();
 	const numberFieldId = useId();
+	const dispatch = useDispatch();
+	const contacts = useSelector(selectContacts);
 
 	const handleSubmit = (values, actions) => {
-		addContact({
+		const newContact = {
 			id: nanoid(),
 			name: values.name,
 			number: values.number,
-		});
+		};
+		const duplicate = contacts.some(
+			existing => existing.name === newContact.name || existing.number === newContact.number
+		);
+		if (duplicate) {
+			alert('Contact with the same name or number already exists!');
+		} else {
+			dispatch(addContact(newContact));
+		}
+
 		actions.resetForm();
 	};
 
