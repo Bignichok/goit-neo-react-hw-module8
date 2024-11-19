@@ -1,38 +1,29 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import ContactForm from '@/components/ContactForm';
 import SearchBox from '@/components/SearchBox';
 import ContactList from '@/components/ContactList';
 
+import { selectContacts, addContact, deleteContact } from '@/redux/contactsSlice';
+import { selectNameFilter, changeFilter } from '@/redux/filtersSlice';
+
 import styles from './App.module.css';
 
 const App = () => {
-	const [contacts, setContacts] = useState(() => {
-		const storedContacts = localStorage.getItem('contacts');
-		return storedContacts
-			? JSON.parse(storedContacts)
-			: [
-					{ id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-					{ id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-					{ id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-					{ id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-			  ];
-	});
-	const [searchValue, setSearchValue] = useState('');
-
-	useEffect(() => {
-		localStorage.setItem('contacts', JSON.stringify(contacts));
-	}, [contacts]);
+	const dispatch = useDispatch();
+	const contacts = useSelector(selectContacts);
+	const nameFilter = useSelector(selectNameFilter);
 
 	const onSearchInputChange = e => {
-		setSearchValue(e.target.value.trim().toLowerCase());
+		dispatch(changeFilter(e.target.value.trim().toLowerCase()));
 	};
 
 	const filteredContacts = useMemo(() => {
-		return contacts.filter(contact => contact.name.toLowerCase().includes(searchValue));
-	}, [contacts, searchValue]);
+		return contacts.filter(contact => contact.name.toLowerCase().includes(nameFilter));
+	}, [contacts, nameFilter]);
 
-	const addContact = contact => {
+	const onAddContact = contact => {
 		const duplicate = contacts.some(
 			existing => existing.name === contact.name || existing.number === contact.number
 		);
@@ -40,19 +31,19 @@ const App = () => {
 			alert('Contact with the same name or number already exists!');
 			return;
 		}
-		setContacts(prevContacts => [...prevContacts, contact]);
+		dispatch(addContact(contact));
 	};
 
-	const deleteContact = id => {
-		setContacts(prevContacts => prevContacts.filter(contact => contact.id !== id));
+	const onDeleteContact = id => {
+		dispatch(deleteContact(id));
 	};
 
 	return (
 		<div className={styles.appContainer}>
 			<h1 className={styles.title}>Phonebook</h1>
-			<ContactForm addContact={addContact} />
+			<ContactForm addContact={onAddContact} />
 			<SearchBox onSearchInputChange={onSearchInputChange} />
-			<ContactList contacts={filteredContacts} deleteContact={deleteContact} />
+			<ContactList contacts={filteredContacts} deleteContact={onDeleteContact} />
 		</div>
 	);
 };
