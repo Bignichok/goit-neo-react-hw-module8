@@ -1,10 +1,10 @@
 import { useId } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import { nanoid } from 'nanoid';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { selectContacts, addContact } from '@/redux/contactsSlice';
+import { selectContacts } from '@/redux/contactsSlice';
+import { addContact } from '@/redux/contactsOperations';
 
 import styles from './ContactForm.module.css';
 
@@ -30,7 +30,6 @@ const ContactForm = () => {
 
 	const handleSubmit = (values, actions) => {
 		const newContact = {
-			id: nanoid(),
 			name: values.name,
 			number: values.number,
 		};
