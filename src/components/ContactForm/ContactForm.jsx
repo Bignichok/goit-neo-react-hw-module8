@@ -4,7 +4,7 @@ import * as Yup from 'yup';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { selectContacts } from '@/redux/contactsSlice';
-import { addContact } from '@/redux/contactsOperations';
+import { addContact } from '@/redux/contactsOps';
 
 import styles from './ContactForm.module.css';
 

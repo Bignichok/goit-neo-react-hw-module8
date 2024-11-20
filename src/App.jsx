@@ -5,7 +5,7 @@ import ContactForm from '@/components/ContactForm';
 import SearchBox from '@/components/SearchBox';
 import ContactList from '@/components/ContactList';
 
-import { fetchContacts } from '@/redux/contactsOperations';
+import { fetchContacts } from '@/redux/contactsOps';
 
 import styles from './App.module.css';
 
