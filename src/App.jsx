@@ -1,27 +1,48 @@
-import { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useEffect, lazy, Suspense } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Route, Routes, Navigate } from 'react-router-dom';
 
-import ContactForm from '@/components/ContactForm';
-import SearchBox from '@/components/SearchBox';
-import ContactList from '@/components/ContactList';
+import { refreshUser } from '@/redux/auth/operations';
+import { selectIsRefreshing } from '@/redux/auth/selectors';
 
-import { fetchContacts } from '@/redux/contactsOps';
+import PrivateRoute from '@/components/PrivateRoute';
+import RestrictedRoute from '@/components/RestrictedRoute';
 
-import styles from './App.module.css';
+const HomePage = lazy(() => import('@/pages/HomePage'));
+const RegisterPage = lazy(() => import('@/pages/RegisterPage'));
+const LoginPage = lazy(() => import('@/pages/LoginPage'));
+const ContactsPage = lazy(() => import('@/pages/ContactsPage'));
 
 const App = () => {
 	const dispatch = useDispatch();
+	const isRefreshing = useSelector(selectIsRefreshing);
 
 	useEffect(() => {
-		dispatch(fetchContacts());
+		dispatch(refreshUser());
 	}, []);
-	
-	return (
-		<div className={styles.appContainer}>
-			<h1 className={styles.title}>Phonebook</h1>
-			<ContactForm />
-			<SearchBox />
-			<ContactList />
+
+	return isRefreshing ? (
+		<b>Refreshing user...</b>
+	) : (
+		<div>
+			<Suspense fallback={<div>Loading...</div>}>
+				<Routes>
+					<Route path="/" element={<HomePage />} />
+					<Route
+						path="/register"
+						element={<RestrictedRoute redirectTo="/contacts" component={<RegisterPage />} />}
+					/>
+					<Route
+						path="/login"
+						element={<RestrictedRoute redirectTo="/contacts" component={<LoginPage />} />}
+					/>
+					<Route
+						path="/contacts"
+						element={<PrivateRoute redirectTo="/login" component={<ContactsPage />} />}
+					/>
+					<Route path="*" element={<Navigate to="/" replace />} />
+				</Routes>
+			</Suspense>
 		</div>
 	);
 };
