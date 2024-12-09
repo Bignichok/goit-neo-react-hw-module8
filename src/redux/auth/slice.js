@@ -24,7 +24,7 @@ const handleRejected = (state, action) => {
 	state.error = action.payload;
 };
 
-export const contactsSlice = createSlice({
+export const authSlice = createSlice({
 	name: 'contacts',
 	initialState,
 	extraReducers: builder => {
@@ -69,4 +69,4 @@ export const contactsSlice = createSlice({
 	},
 });
 
-export default contactsSlice.reducer;
+export default authSlice.reducer;
